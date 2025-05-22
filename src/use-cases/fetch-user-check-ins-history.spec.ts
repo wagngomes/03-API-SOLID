@@ -1,31 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'     
 import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-check-ins-repository'
-import { CheckInUseCase } from './checkIn'
-import { InMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-repository'
-import { Decimal } from '@prisma/client/runtime/library'
+import { FetchUserCheckInsHistoryUseCase } from './fetch-user-check-ins-history'
 
 
 let checkInsRepository: InMemoryCheckInsRepository
-let gymsRepository: InMemoryGymsRepository
-let sut: CheckInUseCase
+let sut: FetchUserCheckInsHistoryUseCase
 
-describe('checkIn History use case', ()=> {
+describe('Fetch user check-In History use case', ()=> {
 
     beforeEach(async()=>{
         checkInsRepository = new InMemoryCheckInsRepository()
-        gymsRepository = new InMemoryGymsRepository()
-        sut = new CheckInUseCase(checkInsRepository, gymsRepository)
-
-
-        await gymsRepository.create({
-            id: 'gym-01',
-            title: 'javascript academy',
-            description: 'programming academy',
-            phone: '8888888',
-            latitude: -27.2092052,
-            longitude: -49.6401091
-
-        })
+        sut = new FetchUserCheckInsHistoryUseCase(checkInsRepository)
     })
 
     afterEach(()=>{
@@ -34,14 +19,52 @@ describe('checkIn History use case', ()=> {
 
     it('should be able to fetch checkIn history', async () =>{
 
-        const { checkIn } = await sut.execute({
-            gymId: "gym-01",
-            userId: "user-01",
-            userLatitude: -27.2092052,
-            userLongitude: -49.6401091
+        await checkInsRepository.create({
+            gym_id: 'gym-01',
+            user_id: 'user-01'
         })
 
-        expect(checkIn.gym_id).toEqual('gym-01')
+        await checkInsRepository.create({
+            gym_id: 'gym-02',
+            user_id: 'user-01'
+        })
+
+        const { checkIns } = await sut.execute({
+            userId: 'user-01',
+            page: 1
+        })
+
+        expect(checkIns).toHaveLength(2)
+        expect(checkIns).toEqual([
+            expect.objectContaining({gym_id: 'gym-01'}),
+            expect.objectContaining({gym_id: 'gym-02'})
+        ])
+
+
+    })
+
+    it('should be able to fetch paginated user checkin history', async () =>{
+
+        for (let i = 1; i <= 22; i++){
+
+            await checkInsRepository.create({
+            gym_id: `gym-${i}`,
+            user_id: 'user-01'
+            })
+        }
+        
+
+        const { checkIns } = await sut.execute({
+            userId: 'user-01',
+            page: 2
+        })
+
+        expect(checkIns).toHaveLength(2)
+        expect(checkIns).toEqual([
+            expect.objectContaining({gym_id: 'gym-21'}),
+            expect.objectContaining({gym_id: 'gym-22'})
+        ])
+
 
     })
 
