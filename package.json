@@ -8,7 +8,6 @@
     "start": "node build/server.js",
     "test": "vitest run --dir src/use-cases",
     "test:watch": "vitest --dir src/use-cases",
-
     "test:e2e": "vitest run --project e2e",
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui"
