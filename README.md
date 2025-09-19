@@ -34,3 +34,29 @@ GymPass style app.
 - [ ] Os dados da aplicação precisam estar persistidos em um banco PostgreSQL;
 - [ ] Todas listas de dados precisam estar paginadas com 20 itens por página;
 - [ ] O usuário deve ser identificado por um JWT (JSON Web Token);
+
+## 🚀 Instalação e execução com Docker
+
+### Pré-requisitos:
+
+- Docker instalado
+
+- Docker Compose instalado
+
+- Clone o repositório:
+
+    - git clone https://Endereço_do_repositório
+    - cd seu-repositorio
+
+
+- Suba os containers:
+
+    - docker-compose up -d
+
+
+### Acessar a API:
+- A API estará disponível em: http://localhost:3333 (ou na porta que você definiu no docker-compose.yml)
+
+ - Parar os containers:
+
+    - docker-compose down
