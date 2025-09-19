@@ -8,6 +8,11 @@ export async function userRoutes(app: FastifyInstance){
 
     app.post('/users', register)
     app.post('/sessions', authenticate)
+    app.get('/',()=>{
+
+        return 'API_RUNNING'
+
+    })
 
     //Rotas privadas
 

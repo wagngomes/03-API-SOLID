@@ -3,9 +3,39 @@ version: '3.8'
 services:
   api-solid-pg:
     image: bitnami/postgresql
+    container_name: DB_Postgres
     ports:
       - 5432:5432
+    volumes:
+      - volume_03_API_SOLID:/bitnami/postgresql
     environment:
       - POSTGRESQL_USERNAME=docker
       - POSTGRESQL_PASSWORD=docker
       - POSTGRESQL_DATABASE=apisolid
+    networks:
+      - rede_03_API_SOLID
+
+  api-solid-src:
+    build:
+      context: .
+    container_name: API_Node
+    ports:
+      - 3333:3333
+    env_file:
+      - .env
+    depends_on:
+      - api-solid-pg
+    restart: always
+    command: sh -c "npx prisma migrate deploy && npm run start"
+    networks:
+      - rede_03_API_SOLID
+
+networks:
+  rede_03_API_SOLID:
+    driver: bridge
+  
+volumes:
+  volume_03_API_SOLID:
+    external: true
+      
+  
